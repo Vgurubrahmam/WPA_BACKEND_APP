@@ -230,13 +230,8 @@ app.get("/filterCustomersByCompany/:company", async (req, res) => {
 
 ---
 
-## **Future Enhancements**
-1. Implement user authentication using JWT.
-2. Add pagination for customer data retrieval.
-3. Include more advanced filtering options.
-4. Enhance error handling and validation.
 
----
+
 
 ## **Conclusion**
 The Customer Management System provides a robust solution for managing users and customers with search and filtering capabilities. It is designed to be scalable and extendable for future features.
