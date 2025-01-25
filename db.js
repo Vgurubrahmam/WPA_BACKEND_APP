@@ -1,12 +1,11 @@
 
 const { Pool} =require("pg")
 
-const pool=new Pool({
-    user:"postgres",
-    host:"localhost",
-    database:"postgres",
-    password:"guru",
-    port:5432,
+const pool = new Pool({
+    connectionString: "postgresql://postgres:guru@db.mlnjadqkzznoqqbtsccu.supabase.co:5432/postgres"
+});
 
-})
 module.exports=pool
+
+
+// postgresql://postgres:guru@db.mlnjadqkzznoqqbtsccu.supabase.co:5432/postgres

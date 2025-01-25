@@ -20,8 +20,7 @@ console.log("database connection error",error);
 app.get("/userTable",async(req,res)=>{
     const schemaOfUserTable=`
 
-    CREATE  SCHEMA IF NOT EXISTS user_auth;
-    CREATE TABLE IF NOT EXISTS user_auth.users(
+    CREATE TABLE IF NOT EXISTS users(
     id SERIAL PRIMARY KEY,
     username VARCHAR(255) UNIQUE NOT NULL,
     email VARCHAR(255) UNIQUE NOT NULL,
@@ -35,7 +34,7 @@ app.get("/userTable",async(req,res)=>{
 
        await pool.query(schemaOfUserTable);
        console.log("table created successfully");
-       const result = await pool.query('SELECT * FROM user_auth.users');
+       const result = await pool.query('SELECT * FROM users');
        const data = result.rows;
        res.status(200).send({message:'Table user  created successfully',data:data})
     }catch(err){
@@ -47,7 +46,7 @@ app.get("/userTable",async(req,res)=>{
 // coustomer table
 app.get("/coustomerTable",async(req,res)=>{
     const coustomerData=`
-    CREATE TABLE IF NOT EXISTS user_auth.coustomerData (
+    CREATE TABLE IF NOT EXISTS coustomerData (
   id SERIAL PRIMARY KEY,
   name VARCHAR(255) NOT NULL,
   email VARCHAR(255) UNIQUE NOT NULL,
@@ -76,7 +75,7 @@ return res.status(200).json({data:data})
 app.post("/userRegister",async(req,res)=>{
     const {username ,email,password}=req.body
     try{
-        const userQuery=`SELECT * FROM user_auth.users WHERE email=$1 OR username=$2`
+        const userQuery=`SELECT * FROM users WHERE email=$1 OR username=$2`
         const userResult=await pool.query(userQuery,[email,username])
         if(userResult.rows.length>0){
                 return res.status(400).json({
@@ -85,12 +84,14 @@ app.post("/userRegister",async(req,res)=>{
                 })
         }
         const hashedpassword=await bcrypt.hash(password,10)
-        const insertUser=`INSERT INTO user_auth.users(username,email,password)
+        const insertUser=`INSERT INTO users(username,email,password)
         VALUES($1,$2,$3) RETURNING *`
         const insertResult=await pool.query(insertUser,[username,email,hashedpassword])
         const newUser=insertResult.rows[0]
         res.status(201).json({message:"user registered successfully",user:{id:newUser.id,email:newUser.email,username:newUser.username}})
     }catch(err){
+        console.log(err);
+        
         res.status(500).send({error:"server error"})
     }
 
@@ -101,7 +102,7 @@ app.post("/userLogin",async(req,res)=>{
     const {email,password}=req.body
     
     try{
-const userCheck=`SELECT * FROM user_auth.users WHERE email=$1`
+const userCheck=`SELECT * FROM users WHERE email=$1`
 const userResult=await pool.query(userCheck,[email])
 if(userResult.rows.length===0){
     return res.status(401).json({error:"user not found"})
